@@ -38,7 +38,7 @@ export class VideojuegosService implements OnModuleInit {
         this.repository.create({
           titulo: 'Forza Horizon 5',
           plataforma: 'Xbox',
-          puntuacion: 9.1,
+          puntuacion: 9.2,
           genero: 'Carrera'
         }),
       ];
