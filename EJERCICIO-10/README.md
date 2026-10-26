@@ -1,72 +1,46 @@
 # EJERCICIO 10 - Wander
 
-## 1. Descripción
+## Descripción
 
-Wander es una aplicación desarrollada con React Native y TypeScript que permite gestionar una lista de destinos de viaje: consultarlos, crearlos, actualizarlos y eliminarlos.
+Wander es una aplicación móvil desarrollada con React Native y TypeScript para consultar, crear, actualizar y eliminar destinos de viaje. El frontend se comunica con un backend NestJS, que utiliza TypeORM para persistir los datos en PostgreSQL.
 
-La aplicación se comunica con un backend mediante una API REST. Como mejora sobre el enunciado original, cada destino incluye un nuevo campo, `presupuesto`, con el importe estimado en euros del viaje.
+Como ampliación, el modelo de destino incluye el campo `presupuesto`, que se muestra en euros en la interfaz.
 
-## 2. Tecnologías utilizadas
+## Tecnologías
 
-- **Frontend:** React Native y TypeScript.
-- **Backend:** API REST (indicar tecnología utilizada).
-- **Base de datos:** (indicar sistema de persistencia).
-- **Comunicación:** API REST mediante peticiones HTTP con `fetch` y datos en formato JSON.
+- Frontend: React Native, Expo y TypeScript.
+- Backend: NestJS.
+- ORM: TypeORM.
+- Base de datos: PostgreSQL.
+- Comunicación: API REST mediante HTTP y JSON.
 
-## 3. Estructura del proyecto
+## Modelo de datos
 
-```text
-EJERCICIO-XX/
-├── backend/
-│   └── Código del servidor
-├── frontend/
-│   └── App.tsx y código de la aplicación móvil
-└── README.md
-```
+La entidad `Destino` contiene los campos `id`, `ciudad`, `pais`, `descripcion` y `presupuesto`.
 
-## 4. Funcionamiento
+## Funcionamiento
 
-1. Al abrirse, la aplicación solicita la lista de destinos al backend.
-2. El backend devuelve los destinos en formato JSON.
-3. El frontend los muestra en pantalla, cada uno en su propia tarjeta.
-4. Al crear un destino, la aplicación envía los datos del formulario mediante una petición `POST`.
-5. Al editar o eliminar un destino, la aplicación envía una petición `PATCH` o `DELETE` sobre su identificador.
-6. Tras cada operación, la aplicación vuelve a solicitar la lista para mostrarla actualizada.
-7. Si alguna petición falla, se muestra un mensaje de error en pantalla.
+1. Al abrirse, la aplicación solicita la lista de destinos.
+2. El backend consulta los registros mediante el Repository de TypeORM.
+3. El frontend muestra los destinos y su presupuesto.
+4. El formulario envía una petición `POST` para crear un destino.
+5. Las acciones de edición y eliminación envían peticiones `PATCH` y `DELETE` con el identificador.
+6. Tras cada operación, la aplicación vuelve a cargar la lista para mostrar el estado actualizado.
+7. Si una petición falla, la interfaz muestra un mensaje de error.
 
-## 5. Modelo de datos
-
-| Campo | Tipo | Descripción |
-|---|---|---|
-| `id` | número | Identificador único del destino. |
-| `ciudad` | texto | Ciudad del destino. |
-| `pais` | texto | País al que pertenece la ciudad. |
-| `descripcion` | texto | Descripción breve del destino. |
-| `presupuesto` | número | **Nuevo.** Presupuesto estimado del viaje, en euros. |
-
-## 6. Mejora implementada
-
-Se ha añadido el campo `presupuesto` a los destinos.
-
-- El formulario de creación incluye un campo numérico de presupuesto. Si el valor introducido no es un número, se guarda `0`.
-- La petición `POST` envía el nuevo campo junto al resto de datos.
-- Cada tarjeta de destino muestra el presupuesto bajo su descripción.
-- Los destinos creados antes de la mejora, que no tienen este campo, se muestran con un presupuesto de `0 €`.
-
-## 7. API REST
+## API REST
 
 | Método | Endpoint | Descripción |
 |---|---|---|
-| GET | `/destinos` | Obtiene la lista de destinos. |
-| POST | `/destinos` | Crea un destino con `ciudad`, `pais`, `descripcion` y `presupuesto`. |
-| PATCH | `/destinos/:id` | Actualiza parcialmente un destino. |
+| GET | `/destinos` | Obtiene todos los destinos. |
+| GET | `/destinos/:id` | Obtiene un destino por identificador. |
+| POST | `/destinos` | Crea un destino con ciudad, país, descripción y presupuesto. |
+| PATCH | `/destinos/:id` | Actualiza los campos enviados para un destino. |
 | DELETE | `/destinos/:id` | Elimina un destino. |
 
-## 8. Instalación y ejecución
+## Instalación y ejecución
 
-### Backend
-
-Acceder a la carpeta `backend/`, instalar las dependencias y arrancar el servidor utilizando los scripts definidos en `package.json`. El servidor debe escuchar en el puerto `3000`.
+Backend:
 
 ```bash
 cd backend
@@ -74,38 +48,25 @@ npm install
 npm run start:dev
 ```
 
-### Frontend
-
-Acceder a la carpeta `frontend/`, instalar las dependencias y ejecutar la aplicación utilizando los scripts definidos en `package.json`.
+Frontend, en otra terminal:
 
 ```bash
 cd frontend
 npm install
-npm start
+npx expo start
 ```
 
-### Configuración de la URL de la API
+En `frontend/App.tsx`, configura `API_URL` con la dirección accesible del ordenador donde se ejecuta el backend. El emulador o dispositivo debe poder comunicarse con esa dirección.
 
-En `App.tsx`, sustituir `TU_IP_LOCAL` por la dirección IP local del ordenador donde se ejecuta el backend:
-El dispositivo o emulador y el ordenador deben estar conectados a la misma red.
+La conexión a PostgreSQL está configurada en `backend/src/app.module.ts`. Revisa el nombre de la base de datos, usuario y contraseña para que coincidan con tu entorno local.
 
-## 9. Comprobaciones
+## Comprobaciones
 
-- Verificar que el backend arranca correctamente.
-- Consultar el endpoint `GET /destinos` y comprobar que devuelve la lista.
-- Crear un destino con presupuesto y verificar que aparece en la aplicación.
-- Comprobar que el campo `presupuesto` se guarda en el backend y se conserva al recargar la aplicación.
-- Editar y eliminar un destino y verificar que la lista se actualiza.
-- Detener el backend y comprobar que la aplicación muestra el mensaje de error.
+- Verificar que el backend arranca y conecta con PostgreSQL.
+- Consultar `GET /destinos` y comprobar la respuesta.
+- Crear un destino y comprobar que aparece en la lista.
+- Actualizar un destino y verificar el resultado.
+- Eliminar un destino y comprobar que desaparece.
+- Comprobar que el presupuesto aparece en la interfaz y se conserva al recargar la lista.
+- Probar el comportamiento de la aplicación cuando no puede conectar con el backend.
 
-## 10. Estado del ejercicio
-
-**Implementado en el frontend:**
-
-- [x] Listado de destinos.
-- [x] Creación de destinos.
-- [x] Actualización de destinos.
-- [x] Eliminación de destinos.
-- [x] Mensajes de error ante fallos de la API.
-- [x] Nuevo campo `presupuesto` en el formulario y en las tarjetas.
-- [x] Confirmar que el backend acepta y persiste el campo `presupuesto`.
